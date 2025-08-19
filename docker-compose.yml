@@ -1,46 +1,43 @@
-version: '3.9'
+version: "3.9"
 
 services:
   db:
-    image: mysql:8.0
-    container_name: db
-    restart: unless-stopped
+    image: postgres:13
+    container_name: mini-project-setup-db
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db-data:/var/lib/mysql
+      - db-data:/var/lib/postgresql/data
 
   backend:
-    build:
-      context: ./backend
-    container_name: backend
-    restart: unless-stopped
+    build: ./backend
+    container_name: mini-project-setup-backend
+    command: node app.js
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     ports:
-      - "3001:3001"
-    environment:
-      DB_HOST: db
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: mydb
+      - "3000:3000"
     depends_on:
       - db
-    command: npm run dev
 
   frontend:
-    build:
-      context: ./frontend
-    container_name: frontend
-    restart: unless-stopped
+    build: ./frontend
+    container_name: mini-project-setup-frontend
+    command: npm run dev -- --host 0.0.0.0
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "5173:5173"
     depends_on:
       - backend
-    command: npm run dev
 
 volumes:
   db-data:
