@@ -1,5 +1,5 @@
 # Use Node.js 20 (supports Vite 7+ and modern crypto APIs)
-FROM node:20
+FROM node:18-alpine
 
 # Set working directory inside the container
 WORKDIR /app
